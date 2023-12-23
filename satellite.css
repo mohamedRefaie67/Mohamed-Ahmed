@@ -1,0 +1,28 @@
+#toggle-container {
+    position: absolute;
+    top: 90px;
+    left: 865px;
+    z-index: 1;
+    padding: 5px;
+    margin-left: 330px;
+    border-radius: 40px;
+    background-color: #b2b0ffa9;
+    width: 150px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.btn-satellite {
+    background-color: transparent;
+    border: none;
+    transition: background-color 0.3s ease;
+    height: 25px;
+    border-radius: 40px; /* يضيف انتقال اللون عند التغيير */
+    margin-left: 10px;
+    width: 100%;
+}
+
+.btn-satellite.active {
+    background-color:  #9292ff;
+    border-radius: 20px;
+}
