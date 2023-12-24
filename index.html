@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Satellite's eyes</title>
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="component.css">
+    <link rel="stylesheet" href="satellite.css">
+    <link rel="stylesheet" href="https://openlayers.org/en/v6.13.0/css/ol.css" type="text/css">
+    <script src="https://openlayers.org/en/v6.13.0/build/ol.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@turf/turf@6.3.0/turf.min.js"></script>
+
+</head>
+<body>  
+          <div class="Nav-bar">
+              <img class="Logo" src="logo.png">
+              <p>Satellite's eyes open doors to exploring the world.</p>
+              <ul >
+
+                  <li><a href="Home.html">Home</a></li>
+                  <li><a href="#">Statistics</a></li>
+                  <li><a href="#">Company Overview</a>
+                      <!-- <div class="dropdown">
+                          <a href="#">Company Overview</a>
+                          <div class="dropdown-content" id="company-list">
+                              <ul class="dropdown-UL" style="color: black;">
+                                  {% for company in data %}
+                                      <li><a href="#" style="color: black;">{{ company[1] }}</a>
+                                          <ul style="color: black;">
+                                              <li><a href="#">Vector</a>
+                                                  <ul style="color: black;">
+                                                      <li><a href="/line/{{ company[0] }}">line</a></li>
+                                                      <li><a href="/poly/{{ company[0] }}">poly</a></li>
+                                                      <li><a href="/point/{{ company[0] }}">point</a></li>
+                                                  </ul>
+                                              </li>
+                                              <li><a href="#">Raster</a>
+                                                  <ul style="color: black;">
+                                                      <li><a href="#">Raster Image</a></li>
+                                                      <li><a href="#">Satellite field trip</a></li>
+                                                  </ul>
+                                              </li>
+                                          </ul>
+                                      </li>
+                                  {% endfor %}
+                              </ul>
+                          </div>
+                      </div>         -->
+                  </li>
+                  <li><a href="#">Team Work</a></li>
+                  <li><a href="#">Contact</a></li>
+                  <li><a href="Login.html">Log in</a></li>
+
+              </ul>
+          </div>
+
+          <div class="content">
+              <div class="Forms">
+                  <ul class="Form"><br>
+
+                      <li onclick="toggleForm('form1', 'arrow1')">Upload Data <span id="arrow1" class="arrow"></span></li>
+                      <form id="form1" action="/upload" method="post" enctype="multipart/form-data">
+                          <!-- <p style="color: red;">{{ error1 }}</p><br> -->
+
+                          <label class="file" for="Raster-Image">Raster Image</label>
+                          <input class="btn" type="file" id="Raster-Image" name="Rasterimage" accept=".tif, .tiff"><br>
+                          
+                          <label class="file" for="Vector">Vector</label>
+                          <input class="btn" type="file" id="Vector" name="Vector" accept=".geojson"><br>
+
+
+                          <label class="file" for="kml">KML</label>
+                          <input class="btn" type="file" id="kml" name="kml" accept=".kml">
+                      
+                          <input class="btn" type="submit" value="Upload"><br><br>
+                      </form><br>
+                      
+                      
+                      <li onclick="toggleForm('form2', 'arrow2')">Latitude and Longitude <span id="arrow2" class="arrow"></span></li>
+                      <form id="form2" action="/search"  method="post" enctype="multipart/form-data">
+                          <!-- {% if error_message %}
+                          <p style="color: red;">{{ error_message }}</p><br>
+                          {% endif %} -->
+                          <label for="Lat" style="color:white;">Latitude</label>
+                          <input class="inp-box" type="text" name="latitude" id="Lat" placeholder="latitude" style="margin-left: 27px;color:white" ><br><br>
+
+                          <label for="Lon" style="color:white;">Longitude</label>
+                          <input class="inp-box"  type="text" name="longitude" id="Lon" placeholder="longitude" style="color:white;" ><br>
+
+                          <input class="btn" type="submit" value="Search"><br><br>
+                      </form><br>
+
+                      <li onclick="toggleForm('form3', 'arrow3')">Search using company name <span id="arrow3" class="arrow"></span></li>
+                      <form id="form3" action="/company" method="POST" enctype="multipart/form-data">
+                          <!-- <p style="color: red;"> {{error_company}} </p><br> -->
+                          <Label for="Company" style="color:white;">Company</Label>
+                          <input class="inp-box" type="text" name="company_name" id="Company" placeholder="Enter Name of Company" >
+                          <input class="btn" type="submit" value="Search"><br><br>
+                          <!-- <div>
+                              <ul>
+                              {% for company_list in company %}
+                                  <li>{{ company_list[0] }}</li>
+                              {% endfor %}
+                              </ul>
+                          </div>  -->
+                      </form>
+
+                  </ul>
+                  
+              </div>
+              <div id="map" class="Map-Div">
+                  <button id="drawButton" class="drawButton" onclick="toggleDrawMenu()" style="top: 60px;">Draw</button>
+                  <div id="drawMenu">
+                    <button id="circleButton" class="drawButton" onclick="drawShape('Circle')">Circle</button>
+                    <button id="squareButton" class="drawButton" onclick="drawShape('Square')">Square</button>
+                    <button id="polygonButton" class="drawButton" onclick="drawShape('Polygon')">Polygon</button>
+                    <button id="clearButton" class="drawButton" onclick="clearDrawing()">Clear</button>
+                  </div>
+                </div>
+                <div id="areaDisplay"></div>
+              <div id="popup" class="ol-popup"
+              style="background-color: rgb(255, 255, 255);margin:10px 0 0 40px;">
+                  <div id="popup-content"></div>
+              </div>
+              <div id="toggle-container">
+                  <button onclick="toggleLayer('Street')" class="btn-satellite">Street</button>
+                  <button onclick="toggleLayer('Satellite')" class="btn-satellite">Satellite</button>
+              </div>
+          </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <script src="index.js"></script>
+    <script src="https://openlayers.org/en/v6.5.0/build/ol.js" type="text/javascript"></script>
+    <script>
+       // var filename = "{{ filename }}";
+        var streetLayer = new ol.layer.Tile({
+            source: new ol.source.OSM(),
+          });
+        var map = new ol.Map({
+            target: 'map',
+            layers: [streetLayer],
+            view: new ol.View({
+                center: ol.proj.fromLonLat([30, 31]),
+                zoom: 4
+            })
+        });
+        var satelliteLayer = new ol.layer.Tile({
+            source: new ol.source.XYZ({
+              url:
+                'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+              attributions:
+                'Tiles © <a href="https://services.arcgisonline.com/ArcGIS/' +
+                'rest/services/World_Imagery/MapServer">ArcGIS</a>',
+            }),
+          });
+          //change color of street and satellite
+          function changeColor(btn) {
+            var buttons = document.querySelectorAll('.btn-satellite');
+            buttons.forEach(function (element) {
+                element.classList.remove('active');
+            });
+            btn.classList.add('active');
+          }
+        
+          function toggleLayer(layer) {
+            if (layer === 'Street') {
+              map.getLayers().setAt(0, streetLayer);
+              changeColor(document.querySelector('.btn-satellite:nth-child(1)'));
+            } else if (layer === 'Satellite') {
+              map.getLayers().setAt(0, satelliteLayer);
+              changeColor(document.querySelector('.btn-satellite:nth-child(2)'));
+            }
+          }
+          //Draw Shape
+          var drawLayer = new ol.layer.Vector({
+            source: new ol.source.Vector(),
+          });
+          map.addLayer(drawLayer);
+      
+          var areaDisplay = document.getElementById('areaDisplay');
+          var overlay = new ol.Overlay({
+            element: areaDisplay,
+            positioning: 'top-right',
+          });
+          map.addOverlay(overlay);
+      
+          var draw; // التفاعل الحالي
+      
+          function toggleDrawMenu() {
+            var drawMenu = document.getElementById('drawMenu');
+            drawMenu.style.display = (drawMenu.style.display === 'block') ? 'none' : 'block';
+          }
+      
+          function drawShape(shapeType) {
+            clearDrawing(); // مسح الرسم الحالي إذا كان موجودا
+      
+            if (shapeType === 'Square') {
+              draw = new ol.interaction.Draw({
+                type: 'Circle',
+                source: drawLayer.getSource(),
+                geometryFunction: ol.interaction.Draw.createRegularPolygon(4),
+              });
+            } else {
+              draw = new ol.interaction.Draw({
+                type: shapeType,
+                source: drawLayer.getSource(),
+              });
+            }
+      
+            draw.on('drawend', function(event) {
+              var geometry = event.feature.getGeometry();
+              calculateArea(geometry, shapeType);
+              map.removeInteraction(draw); // إلغاء التفاعل بمجرد الانتهاء من الرسم
+            });
+      
+            map.addInteraction(draw);
+            toggleDrawMenu(); // إخفاء قائمة الأزرار بعد النقر
+          }
+      
+          function clearDrawing() {
+            map.removeInteraction(draw); // إزالة التفاعل الحالي إذا كان موجودًا
+            drawLayer.getSource().clear(); // مسح الرسومات في الطبقة
+            hideArea(); // إخفاء النتيجة
+          }
+      
+          function clearAllDrawings() {
+            map.getLayers().forEach(function(layer) {
+              if (layer instanceof ol.layer.Vector) {
+                layer.getSource().clear(); // مسح جميع الرسومات في الطبقات النوعية Vector
+              }
+            });
+            hideArea(); // إخفاء النتيجة
+          }
+      
+          function calculateArea(geometry, shapeType) {
+            var area;
+            if (shapeType === 'Circle') {
+              var radius = geometry.getRadius();
+              area = Math.PI * Math.pow(radius, 2);
+            } else {
+              var geoJSONFormat = new ol.format.GeoJSON();
+              var geoJSON = geoJSONFormat.writeFeatureObject(new ol.Feature(geometry));
+              area = turf.area(geoJSON) / 1000000; // تحويل المساحة إلى كيلومتر مربع
+            }
+            areaDisplay.innerHTML = 'Area: ' + area.toFixed(2) + ' km<sup>2</sup>';
+            var extent = geometry.getExtent();
+            var center = ol.extent.getCenter(extent);
+            overlay.setPosition(center);
+            showArea();
+          }
+      
+          function showArea() {
+            areaDisplay.style.display = 'block';
+          }
+      
+          function hideArea() {
+            areaDisplay.style.display = 'none';
+          }
+          
+        //Upload Vector
+        if (filename) {
+            var vectorSource = new ol.source.Vector({
+                url: '/uploadfile/' + filename,
+                format: new ol.format.GeoJSON()
+            });
+    
+            var vectorLayer = new ol.layer.Vector({
+                source: vectorSource,
+                style: new ol.style.Style({
+                    image: new ol.style.Circle({
+                        radius: 8,
+                        fill: new ol.style.Fill({ color: 'red' }),
+                        stroke: new ol.style.Stroke({
+                            color: 'black',
+                            width: 6
+                        })
+                    })
+                })
+            });
+            map.addLayer(vectorLayer)
+            //create map for vector
+          //  var map = new ol.Map({
+           //     target: 'map',
+          //      layers: [
+           //         new ol.layer.Tile({
+            //            source: new ol.source.OSM()
+           //         }),
+            //        vectorLayer
+            //    ],
+           //     view: new ol.View({
+            //        center: ol.proj.fromLonLat([30, 31]),
+             //       zoom: 4
+            //    })
+           // });
+    
+            var popup = new ol.Overlay({
+                element: document.getElementById('popup'),
+                positioning: 'bottom-center',
+                stopEvent: false
+            });
+            map.addOverlay(popup);
+    
+            map.on('click', function(event) {
+                var feature = map.forEachFeatureAtPixel(event.pixel, function(feature) {
+                    return feature;
+                });
+    
+                if (feature) {
+                    var coordinates = feature.getGeometry().getCoordinates();
+                    var properties = feature.getProperties();
+                    var content = '<b>' + properties['Company'] + '</b><br>' +
+                        'Country: ' + properties['Country'] + '<br>' +
+                        'Latitude: ' + properties["Latitude"] + '<br>' +
+                        'Longitude: ' + properties["Longitude"];
+    
+                    popup.setPosition(coordinates);
+                    document.getElementById('popup-content').innerHTML = content;
+                } else {
+                    popup.setPosition(undefined);
+                }
+            });
+        } 
+        //upload kml file
+
+    // إنشاء أنماط للطبقة KML
+    var styles = {
+      'Point': new ol.style.Style({
+        image: new ol.style.Circle({
+          radius: 7,
+          fill: new ol.style.Fill({
+            color: 'rgba(255, 0, 0, 0.7)'
+          }),
+          stroke: new ol.style.Stroke({
+            color: 'rgba(0, 0, 0, 0.9)',
+            width: 2
+          })
+        })
+      }),
+      'LineString': new ol.style.Style({
+        stroke: new ol.style.Stroke({
+          color: 'rgba(0, 0, 255, 0.7)',
+          width: 3
+        })
+      }),
+      'Polygon': new ol.style.Style({
+        fill: new ol.style.Fill({
+          color: 'rgba(0, 255, 0, 0.4)'
+        }),
+        stroke: new ol.style.Stroke({
+          color: 'rgba(0, 0, 0, 0.9)',
+          width: 2
+        })
+      })
+    };
+
+    // إضافة KML إلى الخريطة وتعيين الأنماط
+    var vectorSource = new ol.source.Vector({
+      url: '{{ url_for("uploaded_file", filename=filename) }}',
+      format: new ol.format.KML({
+        extractStyles: false,
+        defaultStyle: null
+      })
+    });
+    
+
+    var vector = new ol.layer.Vector({
+      source: vectorSource,
+      style: function(feature) {
+        return styles[feature.getGeometry().getType()];
+      }
+    });
+
+    map.addLayer(vector);
+
+    // عند تحميل الطبقة KML
+    vectorSource.once('change', function() {
+      if (vectorSource.getState() === 'ready') {
+        var extent = vectorSource.getExtent();
+        map.getView().fit(extent, map.getSize());
+      }
+    });
+      //  var latitude = {{ latitude|default(0) }};
+       // var longitude = {{ longitude|default(0) }};
+        //map for lat and lon
+        
+
+        if (latitude && longitude) {
+            var marker = new ol.Feature({
+                geometry: new ol.geom.Point(ol.proj.fromLonLat([longitude, latitude]))
+            });
+
+            var markerStyle = new ol.style.Style({
+                image: new ol.style.Icon({
+                    anchor: [0.5, 1],
+                    src: 'https://openlayers.org/en/latest/examples/data/icon.png'
+                })
+            });
+
+            marker.setStyle(markerStyle);
+
+            var vectorSource = new ol.source.Vector({
+                features: [marker]
+            });
+
+            var vectorLayer = new ol.layer.Vector({
+                source: vectorSource
+            });
+
+            map.addLayer(vectorLayer);
+        }    
+        var popup = new ol.Overlay({
+            element: document.getElementById('popup'),
+            autoPan: true,
+            autoPanAnimation: {
+                duration: 250
+            }
+        });
+        map.addOverlay(popup);
+
+     //   var closer = document.getElementById('popup-closer');
+     //   closer.onclick = function() {
+     //       popup.setPosition(undefined);
+     //       closer.blur();
+     //       return false;
+      //  };
+
+      //  {% if geojson_data %}
+      //  var geojsonFeature = {{ geojson_data | tojson | safe }};
+        var format = new ol.format.GeoJSON();
+        var features = format.readFeatures(geojsonFeature, {
+            featureProjection: 'EPSG:3857'
+        });
+        
+        
+
+        var vectorSource = new ol.source.Vector({
+            features: features
+        });
+
+        var vectorPoint = new ol.layer.Vector({
+            source: vectorSource,
+            style: new ol.style.Style({
+                image: new ol.style.Circle({
+                    radius: 8,
+                    fill: new ol.style.Fill({ color: 'red' }),
+                    stroke: new ol.style.Stroke({
+                        color: 'white',
+                        width: 2
+                    })
+                })
+            })
+        });
+
+        map.addLayer(vectorPoint);
+
+        map.on('click', function(event) {
+            var feature = map.forEachFeatureAtPixel(event.pixel, function(feature) {
+                return feature;
+            });
+
+            if (feature) {
+                var coordinates = feature.getGeometry().getCoordinates();
+                popup.setPosition(coordinates);
+                var properties = feature.getProperties();
+                var content = '<p>Company: ' + properties['Company'] + '</p>' +
+                            '<p>Country: ' + properties['Country'] + '</p>' +
+                            '<p>Latitude: ' + properties['Latitude'] + '</p>' +
+                            '<p>Longitude: ' + properties['Longitude'] + '</p>';
+                document.getElementById('popup-content').innerHTML = content;
+            } else {
+                popup.setPosition(undefined);
+            }
+        });
+        var vectorLine = new ol.layer.Vector({
+            source: vectorSource,
+            style: new ol.style.Style({
+                stroke: new ol.style.Stroke({
+                    color: 'red',
+                    width: 2
+                })
+            })
+        });
+        map.addLayer(vectorLine);
+        
+
+        var vectorpoly = new ol.layer.Vector({
+            source: vectorSource,
+            style: new ol.style.Style({
+                stroke: new ol.style.Stroke({
+                    color: 'red',
+                    width: 20
+                }),
+                fill: new ol.style.Fill({
+                    color: 'rgba(255, 0, 0, 0.2)' 
+                })
+            })
+        });
+        map.addLayer(vectorpoly);
+        
+      //  {% endif %}
+
+    </script>
+    
+</body>
+</html>
