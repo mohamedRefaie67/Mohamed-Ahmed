@@ -18,6 +18,8 @@
     height: 4vh;
     border-radius: 40px; /* يضيف انتقال اللون عند التغيير */
     width: 100%;
+    cursor: pointer;
+
 }
 
 .btn-satellite.active {
